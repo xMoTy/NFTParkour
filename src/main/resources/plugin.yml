@@ -1,0 +1,8 @@
+main: me.moty.parkour.NFTParkour
+name: ${project.name}
+version: ${project.version}
+author: xMoTy
+api-version: 1.17
+softdepend: [WorldEdit,FastAsyncWorldEdit]
+commands:
+  parkour:
