@@ -16,7 +16,7 @@ public class NFTParkour extends JavaPlugin {
 	private File dataFile;
 	private FileConfiguration config;
 
-//	private ParkourSQL storage;
+	private static NFTParkour instance;
 	private GameManager gm;
 
 	public String host, database, username, password;
@@ -25,6 +25,7 @@ public class NFTParkour extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		setInstance(this);
 		getLogger().info("Powered by xMoTy#3812");
 		reloadConfiguration();
 
@@ -66,5 +67,13 @@ public class NFTParkour extends JavaPlugin {
 
 	public String colorize(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
+	}
+
+	public static NFTParkour getInstance() {
+		return instance;
+	}
+
+	private static void setInstance(NFTParkour m) {
+		NFTParkour.instance = m;
 	}
 }

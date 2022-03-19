@@ -80,7 +80,7 @@ public class ParkourGame {
 	public void join(Player player) {
 		players.add(player);
 		checkpoints.put(player, -1);
-		player.teleport(arena.getWaitingLocation());
+		player.teleportAsync(arena.getWaitingLocation());
 	}
 
 	public void quit(Player player, boolean end) {
@@ -105,7 +105,7 @@ public class ParkourGame {
 	public void start() {
 		nextStage();
 		players.stream().forEach(p -> {
-			p.teleport(arena.getStartLocation());
+			p.teleportAsync(arena.getStartLocation());
 			p.showTitle(Title.title(Component.text().content("¹CÀ¸¶}©l").color(NamedTextColor.GREEN).build(),
 					Component.empty(), Times.of(Duration.ofSeconds(2), Duration.ofSeconds(1), Duration.ofSeconds(1))));
 			p.playSound(Sound.sound(Key.key("entity.ender_dragon.ambient"), Sound.Source.RECORD, 1f, 1f));

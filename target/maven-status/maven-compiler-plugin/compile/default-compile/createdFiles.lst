@@ -14,7 +14,6 @@ me\moty\parkour\ParkourCommand.class
 me\moty\parkour\ParkourSQL.class
 me\moty\parkour\api\PlayerPreJoinParkourEvent.class
 me\moty\parkour\game\ParkourGame$InGameTask.class
-me\moty\parkour\api\ParkourAPI.class
 me\moty\parkour\game\ParkourGame$StartingTask.class
 me\moty\parkour\game\GameStatus.class
 me\moty\parkour\game\Cuboid.class

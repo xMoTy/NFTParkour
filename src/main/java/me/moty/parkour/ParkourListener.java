@@ -16,7 +16,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import me.moty.parkour.api.PlayerJoinParkourEvent;
-import me.moty.parkour.api.PlayerPreJoinParkourEvent;
 import me.moty.parkour.game.GameStatus;
 import me.moty.parkour.game.ParkourGame;
 import net.kyori.adventure.key.Key;
@@ -65,11 +64,6 @@ public class ParkourListener implements Listener {
 			e.getPlayer().sendMessage(m.colorize("&a你到達了終點!"));
 			e.getPlayer().playSound(Sound.sound(Key.key("entity.firework_rocket.launch"), Sound.Source.RECORD, 1f, 1f));
 		}
-	}
-
-	@EventHandler
-	public void join(PlayerPreJoinParkourEvent e) {
-		e.pass();
 	}
 
 	@EventHandler
