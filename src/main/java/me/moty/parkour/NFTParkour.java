@@ -18,7 +18,7 @@ public class NFTParkour extends JavaPlugin {
 
 	private static NFTParkour instance;
 	private GameManager gm;
-
+	private ParkourSQL storage;
 	public String host, database, username, password;
 	public int port;
 	public boolean ssl;
@@ -61,9 +61,9 @@ public class NFTParkour extends JavaPlugin {
 		return gm;
 	}
 
-//	public ParkourSQL getStorage() {
-//		return this.storage;
-//	}
+	public ParkourSQL getStorage() {
+		return this.storage;
+	}
 
 	public String colorize(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);

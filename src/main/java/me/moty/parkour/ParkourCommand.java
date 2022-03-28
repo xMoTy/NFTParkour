@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -29,6 +30,7 @@ import me.moty.parkour.game.ParkourGame;
 public class ParkourCommand implements CommandExecutor, TabCompleter {
 	private NFTParkour m;
 	private HashMap<Player, ParkourArena.Builder> gameBuilder = new HashMap<>();
+	private HashMap<Player, String> deleteConfirm = new HashMap<>();
 
 	public ParkourCommand(NFTParkour m) {
 		this.m = m;
@@ -60,10 +62,12 @@ public class ParkourCommand implements CommandExecutor, TabCompleter {
 				return false;
 			if (game.getPlayers().size() == game.getArena().getMaxPlayer())
 				return false;
-			PlayerPreJoinParkourEvent event = new PlayerPreJoinParkourEvent(p, (delay) -> {
-				game.join(delay);
-				PlayerJoinParkourEvent e = new PlayerJoinParkourEvent(p, game);
-				this.m.getServer().getPluginManager().callEvent(e);
+			PlayerPreJoinParkourEvent event = new PlayerPreJoinParkourEvent(p, (player) -> {
+				this.m.getServer().getScheduler().runTask(this.m, () -> {
+					game.join(player);
+					PlayerJoinParkourEvent e = new PlayerJoinParkourEvent(player, game);
+					this.m.getServer().getPluginManager().callEvent(e);
+				});
 			});
 			this.m.getServer().getPluginManager().callEvent(event);
 			return true;
@@ -107,6 +111,31 @@ public class ParkourCommand implements CommandExecutor, TabCompleter {
 			gameBuilder.put(p, builder);
 			sender.sendMessage(m.colorize("&f" + args[1] + " &a創建成功! &7(下一步: &e/parkour setarena&7)"));
 			return true;
+		} else if (args[0].equalsIgnoreCase("delete")) {
+			if (args.length < 2)
+				return false;
+			String name = args[1];
+			if (!m.getGameManager().existsArena(name))
+				return false;
+			Player p = (Player) sender;
+			if (deleteConfirm.containsKey(p))
+				return false;
+			sender.sendMessage(m.colorize("&f" + name + " &a準備刪除! &7(確認: &e/parkour confirm&7)"));
+			deleteConfirm.put(p, name);
+			this.m.getServer().getScheduler().runTaskLater(this.m, () -> {
+
+			}, 20 * 60);
+		} else if (args[0].equalsIgnoreCase("confirm")) {
+			Player p = (Player) sender;
+			if (!deleteConfirm.containsKey(p))
+				return false;
+			String name = deleteConfirm.get(p);
+			if (!m.getGameManager().existsArena(name)) {
+				deleteConfirm.remove(p);
+				return false;
+			}
+			sender.sendMessage(m.colorize("&f" + args[1] + " &a成功刪除!"));
+			m.getGameManager().deleteArena(name);
 		} else if (args[0].equalsIgnoreCase("setarena")) {
 			if (!(sender instanceof Player))
 				return false;
@@ -206,7 +235,7 @@ public class ParkourCommand implements CommandExecutor, TabCompleter {
 				return false;
 			if (p.getLocation().getBlock().isEmpty())
 				return false;
-			if (!p.getLocation().getBlock().getType().name().contains("PRESSURE_PLATE"))
+			if (!p.getLocation().getBlock().getType().equals(Material.HEAVY_WEIGHTED_PRESSURE_PLATE))
 				return false;
 			Block plate = p.getLocation().getBlock();
 			gameBuilder.get(p).addCheckpoints(plate.getLocation());

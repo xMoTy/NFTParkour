@@ -1,6 +1,10 @@
 package me.moty.parkour;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.concurrent.locks.ReentrantLock;
+
+import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -13,7 +17,7 @@ public class ParkourSQL {
 	public ParkourSQL(NFTParkour m) {
 		this.m = m;
 		init();
-		setup();
+//		setup();
 	}
 
 	private void init() {
@@ -26,6 +30,14 @@ public class ParkourSQL {
 		config.addDataSourceProperty("prepStmtCacheSize", "400");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 		ds = new HikariDataSource(config);
+	}
+
+	public Connection getConnection() throws SQLException {
+		return ds.getConnection();
+	}
+
+	public DataSource getDataSource() {
+		return ds;
 	}
 
 	public void setup() {

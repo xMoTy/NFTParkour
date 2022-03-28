@@ -90,4 +90,13 @@ public class GameManager {
 		games.add(new ParkourGame(arena, this.m));
 		save();
 	}
+
+	public void deleteArena(String arena) {
+		if (this.arenas.containsKey(arena))
+			this.arenas.remove(arena);
+		if (games.contains(getGame(arena)))
+			games.remove(getGame(arena));
+		this.arena.set("arenas." + arena, null);
+		save();
+	}
 }

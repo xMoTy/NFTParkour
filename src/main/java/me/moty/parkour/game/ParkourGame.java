@@ -97,6 +97,7 @@ public class ParkourGame {
 		GameRecord record = new GameRecord(p.getUniqueId(), now, finished.size() + 1, (left / 1000), arena.getName());
 		p.sendMessage(Component.text().append(Component.text("¯Ó¶O®É¶¡: " + left / 1000 + " ¬í", NamedTextColor.YELLOW)));
 		finished.put(finished.size() + 1, record);
+		checkpoints.put(p, -1);
 		p.teleportAsync(arena.getWaitingLocation());
 		PlayerFinishParkourEvent event = new PlayerFinishParkourEvent(p, record.getPlacement(), record);
 		plugin.getServer().getPluginManager().callEvent(event);

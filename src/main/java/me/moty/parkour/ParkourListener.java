@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import me.moty.parkour.api.PlayerJoinParkourEvent;
+import me.moty.parkour.api.PlayerPreJoinParkourEvent;
 import me.moty.parkour.game.GameStatus;
 import me.moty.parkour.game.ParkourGame;
 import net.kyori.adventure.key.Key;
@@ -26,6 +27,13 @@ public class ParkourListener implements Listener {
 
 	public ParkourListener(NFTParkour m) {
 		this.m = m;
+	}
+
+	@EventHandler
+	public void onPreJoin(PlayerPreJoinParkourEvent e) {
+		this.m.getServer().getScheduler().runTaskAsynchronously(this.m, () -> {
+			e.pass();
+		});
 	}
 
 	@EventHandler

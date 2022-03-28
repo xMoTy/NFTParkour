@@ -1,6 +1,6 @@
 main: me.moty.parkour.NFTParkour
 name: NFTParkour
-version: 1.0.2
+version: 1.0.4
 author: xMoTy
 api-version: 1.17
 softdepend: [WorldEdit,FastAsyncWorldEdit]
