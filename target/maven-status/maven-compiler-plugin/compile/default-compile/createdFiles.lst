@@ -3,6 +3,7 @@ me\moty\parkour\game\ParkourArena.class
 me\moty\parkour\game\ParkourGame$EndTask.class
 me\moty\parkour\ParkourListener.class
 me\moty\parkour\game\ParkourArena$Builder.class
+me\moty\parkour\api\ParkourDeleteEvent.class
 me\moty\parkour\game\ParkourGame$1.class
 me\moty\parkour\api\ParkourStartEvent.class
 me\moty\parkour\api\PlayerLeaveParkourEvent.class

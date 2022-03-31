@@ -67,11 +67,13 @@ public class ParkourCommand implements CommandExecutor, TabCompleter {
 					game.join(player);
 					PlayerJoinParkourEvent e = new PlayerJoinParkourEvent(player, game);
 					this.m.getServer().getPluginManager().callEvent(e);
+					p.sendMessage(m.colorize("&7&o傳送至等待大廳..."));
 				});
 			});
 			this.m.getServer().getPluginManager().callEvent(event);
+			p.sendMessage(m.colorize("&7&o正在加入遊戲..."));
 			return true;
-		} else if (args[0].equalsIgnoreCase("leave")) {
+		} else if (args[0].equalsIgnoreCase("quit")) {
 			if (!(sender instanceof Player))
 				return false;
 			Player p = (Player) sender;
@@ -79,6 +81,7 @@ public class ParkourCommand implements CommandExecutor, TabCompleter {
 				return false;
 			ParkourGame game = m.getGameManager().getGame(p);
 			game.quit(p, false);
+			p.sendMessage(m.colorize("&7&o你退出了遊戲..."));
 			return true;
 		} else if (args[0].equalsIgnoreCase("info")) {
 			if (args.length < 2)
@@ -123,8 +126,10 @@ public class ParkourCommand implements CommandExecutor, TabCompleter {
 			sender.sendMessage(m.colorize("&f" + name + " &a準備刪除! &7(確認: &e/parkour confirm&7)"));
 			deleteConfirm.put(p, name);
 			this.m.getServer().getScheduler().runTaskLater(this.m, () -> {
-
+				if (deleteConfirm.containsKey(p))
+					deleteConfirm.remove(p);
 			}, 20 * 60);
+			return true;
 		} else if (args[0].equalsIgnoreCase("confirm")) {
 			Player p = (Player) sender;
 			if (!deleteConfirm.containsKey(p))
@@ -136,6 +141,8 @@ public class ParkourCommand implements CommandExecutor, TabCompleter {
 			}
 			sender.sendMessage(m.colorize("&f" + args[1] + " &a成功刪除!"));
 			m.getGameManager().deleteArena(name);
+			deleteConfirm.remove(p);
+			return true;
 		} else if (args[0].equalsIgnoreCase("setarena")) {
 			if (!(sender instanceof Player))
 				return false;
@@ -269,6 +276,9 @@ public class ParkourCommand implements CommandExecutor, TabCompleter {
 		else if (args.length == 2 && args[0].equalsIgnoreCase("join"))
 			return this.m.getGameManager().getGames().stream().filter(game -> game.getStatus() == GameStatus.PREPARING)
 					.map(game -> game.getArena().getName()).collect(Collectors.toList());
+		else if (args.length == 2 && (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("delete")))
+			return this.m.getGameManager().getGames().stream().map(game -> game.getArena().getName())
+					.collect(Collectors.toList());
 		return null;
 	}
 

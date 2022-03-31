@@ -40,8 +40,10 @@ public class GameManager {
 	}
 
 	public void load() {
-		if (!arenas.isEmpty())
+		if (!arenas.isEmpty()) {
 			arenas.clear();
+			games.clear();
+		}
 		if (!arena.isSet("arenas") || arena.getConfigurationSection("arenas") == null)
 			return;
 		arena.getConfigurationSection("arenas").getKeys(false).stream().forEach(str -> {

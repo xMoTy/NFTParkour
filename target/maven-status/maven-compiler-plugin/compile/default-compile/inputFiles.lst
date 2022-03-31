@@ -12,5 +12,6 @@ D:\WorkBench\NFTParkour\src\main\java\me\moty\parkour\ParkourSQL.java
 D:\WorkBench\NFTParkour\src\main\java\me\moty\parkour\game\ParkourArena.java
 D:\WorkBench\NFTParkour\src\main\java\me\moty\parkour\api\PlayerPreJoinParkourEvent.java
 D:\WorkBench\NFTParkour\src\main\java\me\moty\parkour\game\ParkourGame.java
+D:\WorkBench\NFTParkour\src\main\java\me\moty\parkour\api\ParkourDeleteEvent.java
 D:\WorkBench\NFTParkour\src\main\java\me\moty\parkour\ParkourCommand.java
 D:\WorkBench\NFTParkour\src\main\java\me\moty\parkour\api\ParkourEndEvent.java

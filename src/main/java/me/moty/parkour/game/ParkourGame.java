@@ -7,7 +7,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -32,11 +35,16 @@ public class ParkourGame {
 	private final HashMap<Integer, GameRecord> finished = new HashMap<>();
 	private long start = System.currentTimeMillis();
 	private GameStatus status = GameStatus.PREPARING;
-	private BukkitTask task;
+	private BukkitTask task = null;
+	private ItemStack backToCheckpoint;
 
 	public ParkourGame(ParkourArena arena, Plugin plugin) {
 		this.plugin = plugin;
 		this.arena = arena;
+		this.backToCheckpoint = new ItemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
+		ItemMeta meta = backToCheckpoint.getItemMeta();
+		meta.displayName(Component.text("い膥翴", NamedTextColor.YELLOW, TextDecoration.BOLD));
+		this.backToCheckpoint.setItemMeta(meta);
 	}
 
 	public ParkourArena getArena() {
@@ -86,18 +94,20 @@ public class ParkourGame {
 	public void quit(Player player, boolean end) {
 		if (!end)
 			players.remove(player);
+		player.getInventory().setItem(4, null);
 		checkpoints.remove(player);
+		player.teleportAsync(arena.getWaitingLocation());
 		PlayerLeaveParkourEvent event = new PlayerLeaveParkourEvent(player, this);
 		plugin.getServer().getPluginManager().callEvent(event);
 	}
 
 	public void finish(Player p) {
+		checkpoints.put(p, -1);
 		long now = System.currentTimeMillis();
 		long left = now - start;
 		GameRecord record = new GameRecord(p.getUniqueId(), now, finished.size() + 1, (left / 1000), arena.getName());
 		p.sendMessage(Component.text().append(Component.text("禣丁: " + left / 1000 + " ", NamedTextColor.YELLOW)));
 		finished.put(finished.size() + 1, record);
-		checkpoints.put(p, -1);
 		p.teleportAsync(arena.getWaitingLocation());
 		PlayerFinishParkourEvent event = new PlayerFinishParkourEvent(p, record.getPlacement(), record);
 		plugin.getServer().getPluginManager().callEvent(event);
@@ -109,7 +119,9 @@ public class ParkourGame {
 			p.teleportAsync(arena.getStartLocation());
 			p.showTitle(Title.title(Component.text().content("笴栏秨﹍").color(NamedTextColor.GREEN).build(),
 					Component.empty(), Times.of(Duration.ofSeconds(2), Duration.ofSeconds(1), Duration.ofSeconds(1))));
-			p.playSound(Sound.sound(Key.key("entity.ender_dragon.ambient"), Sound.Source.RECORD, 1f, 1f));
+			p.playSound(Sound.sound(Key.key("entity.ender_dragon.ambient"), Sound.Source.AMBIENT, 1f, 1f),
+					Sound.Emitter.self());
+			p.getInventory().setItem(4, backToCheckpoint);
 		});
 		start = System.currentTimeMillis();
 		ParkourStartEvent event = new ParkourStartEvent(this);
@@ -160,10 +172,13 @@ public class ParkourGame {
 	public void stopCountin() {
 		status = GameStatus.PREPARING;
 		task.cancel();
-		players.forEach(p -> {
-			p.sendActionBar(Component.text("&c计氨ゎ產计ぃì"));
-			p.playSound(Sound.sound(Key.key("block.note_block.bass"), Sound.Source.RECORD, 1F, .5F));
-		});
+		task = null;
+		if (!players.isEmpty())
+			players.forEach(p -> {
+				p.sendActionBar(Component.text("计氨ゎ產计ぃì", NamedTextColor.RED));
+				p.playSound(Sound.sound(Key.key("block.note_block.bass"), Sound.Source.AMBIENT, 1F, .5F),
+						Sound.Emitter.self());
+			});
 	}
 
 	public void nextStage() {
@@ -171,6 +186,7 @@ public class ParkourGame {
 		case END:
 			status = GameStatus.PREPARING;
 			task.cancel();
+			task = null;
 			break;
 		case INGAME:
 			status = GameStatus.END;
@@ -188,7 +204,6 @@ public class ParkourGame {
 			break;
 		default:
 			break;
-
 		}
 	}
 
@@ -209,7 +224,8 @@ public class ParkourGame {
 			}
 			players.stream().forEach(p -> {
 				p.sendActionBar(Component.text("计 " + countdown + " ").color(NamedTextColor.GOLD));
-				p.playSound(Sound.sound(Key.key("ui.button.click"), Sound.Source.RECORD, 1f, 1f));
+				p.playSound(Sound.sound(Key.key("ui.button.click"), Sound.Source.AMBIENT, 1f, 1f),
+						Sound.Emitter.self());
 			});
 			countdown--;
 		}
@@ -230,6 +246,10 @@ public class ParkourGame {
 				return;
 			}
 			if (finished.size() >= 3) {
+				nextStage();
+				return;
+			}
+			if (finished.size() == players.size()) {
 				nextStage();
 				return;
 			}
